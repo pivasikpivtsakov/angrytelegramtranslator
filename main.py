@@ -5,6 +5,7 @@ import httpx as http
 
 from env_config import TG_API_TOKEN
 from telegram import answer_inline_query, TGURL_SETWEBHOOK, API_ROOT
+from telegram.models import Update
 
 app = FastAPI()
 logging.basicConfig(level=logging.INFO)
@@ -25,6 +26,6 @@ async def root():
 
 
 @app.post(f"/{TG_API_TOKEN}")
-async def api_root(request: Request):
-    logger.info(await request.json())
+async def api_root(body: Update):
+    logger.info(body.json())
     return await answer_inline_query()

@@ -2,7 +2,7 @@ import logging
 
 import httpx as http
 
-from telegram.urls import TGURL_ANSWERINLINEQUERY
+from .urls import TGURL_ANSWERINLINEQUERY
 
 
 logger = logging.Logger(__name__)
@@ -23,4 +23,10 @@ async def answer_inline_query():
                 ]
             }
         )
-        return response.json()
+        response_json = response.json()
+        if response.status_code == 200:
+            return response_json
+        else:
+            logger.error("answering inline query failed")
+            logger.error(response_json)
+            return response_json
