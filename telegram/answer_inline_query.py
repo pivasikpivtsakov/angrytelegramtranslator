@@ -13,7 +13,7 @@ logger = logging.Logger(__name__)
 
 class Body(BaseModel):
     inline_query_id: str
-    results: Iterable[InlineQueryResultArticle]
+    results: list[InlineQueryResultArticle]
 
 
 async def answer_inline_query(body: Body):
