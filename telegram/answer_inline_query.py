@@ -8,7 +8,7 @@ from .models import InlineQueryResultArticle
 from .urls import TGURL_ANSWERINLINEQUERY
 
 
-logger = logging.Logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Body(BaseModel):
