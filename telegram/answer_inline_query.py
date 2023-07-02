@@ -1,6 +1,11 @@
+import logging
+
 import httpx as http
 
 from telegram.urls import TGURL_ANSWERINLINEQUERY
+
+
+logger = logging.Logger(__name__)
 
 
 async def answer_inline_query():

@@ -13,11 +13,12 @@ logger = logging.Logger(__name__)
 @app.on_event("startup")
 async def startup():
     async with http.AsyncClient() as client:
+        logger.info("setting webhook...")
         response = await client.post(TGURL_SETWEBHOOK, data={"url": API_ROOT})
         logger.info(f"setwebhook result: \n {response.json()}")
 
 
-@app.post("/")
+@app.get("/")
 async def root():
     return "healthy"
 
