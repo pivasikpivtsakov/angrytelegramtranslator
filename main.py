@@ -26,5 +26,5 @@ async def root():
 
 @app.post(f"/{TG_API_TOKEN}")
 async def api_root(request: Request):
-    logger.info(request.json())
+    logger.info(await request.json())
     return await answer_inline_query()
