@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 import httpx as http
 
 from env_config import TG_API_TOKEN
@@ -25,5 +25,6 @@ async def root():
 
 
 @app.post(f"/{TG_API_TOKEN}")
-async def api_root():
+async def api_root(request: Request):
+    logger.info(request.json())
     return await answer_inline_query()
