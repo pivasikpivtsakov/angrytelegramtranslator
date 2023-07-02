@@ -18,6 +18,7 @@ class Body(BaseModel):
 
 async def answer_inline_query(body: Body):
     async with http.AsyncClient() as client:
+        logger.info(body.json())
         response = await client.post(
             TGURL_ANSWERINLINEQUERY, json=body.json()
         )
