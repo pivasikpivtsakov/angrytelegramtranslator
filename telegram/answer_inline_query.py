@@ -1,27 +1,25 @@
 import logging
+from typing import Iterable
 
 import httpx as http
+from pydantic import BaseModel
 
+from .models import InlineQueryResultArticle
 from .urls import TGURL_ANSWERINLINEQUERY
 
 
 logger = logging.Logger(__name__)
 
 
-async def answer_inline_query():
+class Body(BaseModel):
+    inline_query_id: str
+    results: Iterable[InlineQueryResultArticle]
+
+
+async def answer_inline_query(body: Body):
     async with http.AsyncClient() as client:
         response = await client.post(
-            TGURL_ANSWERINLINEQUERY, json={
-                "results": [
-                    {
-                        "type": "article",
-                        "id": "1",
-                        "title": "Title",
-                        "description": "Description",
-                        "input_message_content": {"message_text": "hello I can respond to messages"}
-                    }
-                ]
-            }
+            TGURL_ANSWERINLINEQUERY, json=body.json()
         )
         response_json = response.json()
         if response.status_code == 200:
