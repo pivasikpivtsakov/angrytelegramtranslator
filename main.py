@@ -7,7 +7,8 @@ from env_config import TG_API_TOKEN
 from telegram import answer_inline_query, TGURL_SETWEBHOOK, API_ROOT
 
 app = FastAPI()
-logger = logging.Logger(__name__)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @app.on_event("startup")
