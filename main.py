@@ -32,7 +32,7 @@ async def api_root(body: Update):
     logger.info(body.json())
 
     def random_str(length: int):
-        return "".join(random.choices(string.ascii_uppercase + string.digits, k=length))
+        return "".join(random.choices(string.digits, k=length))
 
     return await answer_inline_query(
         AnswerInlineQueryBody(
