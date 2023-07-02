@@ -17,6 +17,11 @@ async def startup():
         logger.info(f"setwebhook result: \n {response.json()}")
 
 
-@app.get(f"/{TG_API_TOKEN}")
+@app.post("/")
+async def root():
+    return "healthy"
+
+
+@app.post(f"/{TG_API_TOKEN}")
 async def api_root():
     return await answer_inline_query()
