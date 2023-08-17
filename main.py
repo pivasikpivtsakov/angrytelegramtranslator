@@ -8,7 +8,7 @@ import httpx as http
 
 from env_config import TG_API_TOKEN
 from telegram import answer_inline_query, AnswerInlineQueryBody, TGURL_SETWEBHOOK, API_ROOT
-from telegram.models import Update, InlineQueryResultArticle, InputMessageContent
+from telegram.models import Update, InlineQueryResultArticle, InputTextMessageContent
 
 app = FastAPI()
 logging.basicConfig(level=logging.INFO)
@@ -42,7 +42,7 @@ async def api_root(body: Update):
                 InlineQueryResultArticle(
                     id=str(uuid4()),
                     title="sample_title",
-                    input_message_content=InputMessageContent(message_text="msg")
+                    input_message_content=InputTextMessageContent(message_text="msg")
                 )
             ]
         )
