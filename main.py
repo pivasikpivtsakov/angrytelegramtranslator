@@ -1,6 +1,7 @@
 import logging
 import random
 import string
+from uuid import uuid4
 
 from fastapi import FastAPI
 import httpx as http
@@ -39,7 +40,7 @@ async def api_root(body: Update):
             inline_query_id=body.inline_query.id,
             results=[
                 InlineQueryResultArticle(
-                    id=random_str(length=10),
+                    id=str(uuid4()),
                     title="sample_title",
                     input_message_content=InputMessageContent(message_text="msg")
                 )
