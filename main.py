@@ -38,12 +38,12 @@ async def api_root(body: Update):
     return await answer_inline_query(
         AnswerInlineQueryBody(
             inline_query_id=body.inline_query.id,
-            results=[
-                InlineQueryResultArticle(
-                    id=str(uuid4()),
-                    title="sample_title",
-                    input_message_content=InputTextMessageContent(message_text="msg")
-                )
-            ]
+            # results=[
+            #     InlineQueryResultArticle(
+            #         id=str(uuid4()),
+            #         title="sample_title",
+            #         input_message_content=InputTextMessageContent(message_text="msg")
+            #     )
+            # ]
         )
     )

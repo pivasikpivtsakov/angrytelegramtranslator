@@ -1,5 +1,5 @@
 import logging
-from typing import Iterable
+from typing import Iterable, Optional
 
 import httpx as http
 from pydantic import BaseModel
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class Body(BaseModel):
     inline_query_id: str
-    results: list[InlineQueryResultArticle]
+    results: Optional[list[InlineQueryResultArticle]] = None
 
 
 async def answer_inline_query(body: Body):
