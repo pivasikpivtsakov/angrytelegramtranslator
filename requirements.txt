@@ -2,3 +2,4 @@ uvicorn==0.23.2
 httpx==0.24.1
 fastapi==0.101.1
 pydantic==1.10.12
+python-telegram-bot==20.4
