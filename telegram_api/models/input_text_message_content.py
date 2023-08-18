@@ -1,4 +1,4 @@
-from telegram.models import InputMessageContent
+from . import InputMessageContent
 
 
 class InputTextMessageContent(InputMessageContent):

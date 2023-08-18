@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from telegram.models import InlineQuery
+from . import InlineQuery
 
 
 class Update(BaseModel):
