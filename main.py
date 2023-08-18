@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 async def startup():
     async with http.AsyncClient() as client:
         logger.info("setting webhook...")
-        response = await client.post(TGURL_SETWEBHOOK, json={"url": API_ROOT})
+        response = await client.post(TGURL_SETWEBHOOK, data={"url": API_ROOT})
         logger.info(f"setwebhook result: \n {response.json()}")
 
 

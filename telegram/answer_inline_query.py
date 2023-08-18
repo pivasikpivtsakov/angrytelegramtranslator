@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Iterable, Optional
 
@@ -18,9 +19,13 @@ class Body(BaseModel):
 
 async def answer_inline_query(body: Body):
     async with http.AsyncClient() as client:
-        logger.info(body.json())
+        logger.info(body.dict())
+        dto = {
+            "inline_query_id": body.inline_query_id,
+            "results": json.dumps(body.dict(include={"results"})["results"])
+        }
         response = await client.post(
-            TGURL_ANSWERINLINEQUERY, json=body.json()
+            TGURL_ANSWERINLINEQUERY, data=dto
         )
         response_json = response.json()
         if response.status_code == 200:
