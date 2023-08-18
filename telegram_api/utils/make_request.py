@@ -12,12 +12,13 @@ logger = logging.getLogger(__name__)
 
 
 async def make_tg_request(method: Method, data: BaseModel):
-    logger.info(f"making request to method={method}")
+    methodval = method.value
+    logger.info(f"making request to method={methodval}")
     logger.debug(f"with data={data.dict()}")
     try:
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                f"{TGBOTAPIURL}/{method}",
+                f"{TGBOTAPIURL}/{methodval}",
                 data=data.dict()
             )
             response_json = response.json()
