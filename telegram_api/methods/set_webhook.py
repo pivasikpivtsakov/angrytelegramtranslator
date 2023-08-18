@@ -1,13 +1,11 @@
 import logging
 
-from pydantic import BaseModel
-
-from ..utils import make_tg_request, Method, API_ROOT
+from ..utils import make_tg_request, Method, API_ROOT, FormDataModel
 
 logger = logging.getLogger(__name__)
 
 
-class Body(BaseModel):
+class Body(FormDataModel):
     url: str
 
 

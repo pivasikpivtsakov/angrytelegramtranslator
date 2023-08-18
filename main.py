@@ -8,7 +8,7 @@ from telegram_api.methods import set_webhook, answer_inline_query, AnswerInlineQ
 from telegram_api.models import Update, InlineQueryResultArticle, InputTextMessageContent
 
 app = FastAPI()
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 

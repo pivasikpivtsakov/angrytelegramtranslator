@@ -2,24 +2,25 @@ import logging
 
 import httpx
 from httpx import HTTPError
-from pydantic import BaseModel
 
+from . import FormDataModel
 from .method import Method
 from .urls import TGBOTAPIURL
 
-logging.basicConfig(level=logging.DEBUG)
+
 logger = logging.getLogger(__name__)
 
 
-async def make_tg_request(method: Method, data: BaseModel):
+async def make_tg_request(method: Method, formdata: FormDataModel):
     methodval = method.value
+    data = formdata.as_form_data_dict()
     logger.info(f"making request to method={methodval}")
-    logger.debug(f"with data={data.dict()}")
+    logger.debug(f"with data={data}")
     try:
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 f"{TGBOTAPIURL}/{methodval}",
-                data=data.dict()
+                data=data
             )
             response_json = response.json()
             if response.status_code == 200:

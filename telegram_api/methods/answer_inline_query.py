@@ -1,15 +1,13 @@
 import logging
 from typing import Optional
 
-from pydantic import BaseModel
-
-from telegram_api.models import InlineQueryResultArticle
-from ..utils import make_tg_request, Method
+from ..models import InlineQueryResultArticle
+from ..utils import make_tg_request, Method, FormDataModel
 
 logger = logging.getLogger(__name__)
 
 
-class Body(BaseModel):
+class Body(FormDataModel):
     inline_query_id: str
     results: Optional[list[InlineQueryResultArticle]] = None
 
