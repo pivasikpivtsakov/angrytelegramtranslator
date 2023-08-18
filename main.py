@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup():
     logger.info("setting webhook...")
-    response = await set_webhook()
-    logger.info(f"setwebhook result: \n {response.json()}")
+    webhook_result = await set_webhook()
+    logger.info(f"setwebhook result: \n {webhook_result}")
 
 
 @app.get("/")
