@@ -116,7 +116,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 def main() -> None:
     """Run the bot."""
     # Create the Application and pass it your bot's token.
-    application = Application.builder().token("TOKEN").build()
+    application = Application.builder().token(TG_API_TOKEN).build()
 
     # on different commands - answer in Telegram
     application.add_handler(CommandHandler("start", start))
