@@ -53,10 +53,10 @@ async def api_root(body: Update):
                         input_message_content=InputTextMessageContent(message_text=calm_text)
                     )
                 ],
-                button=InlineQueryResultsButton(
-                    text="create in pm bot",
-                    # start_parameter=f"https://t.me/{BOT_NAME}?userquery={base64.b64encode(user_query.encode()).decode()}"
-                )
+                # button=InlineQueryResultsButton(
+                #     text="create in pm bot",
+                #     start_parameter=f"https://t.me/{BOT_NAME}?userquery={base64.b64encode(user_query.encode()).decode()}"
+                # )
             )
         )
 
