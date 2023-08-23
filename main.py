@@ -1,7 +1,7 @@
 import logging
 from contextlib import asynccontextmanager
-from os import stat_result
 from uuid import uuid4
+import base64
 
 import openai
 from fastapi import FastAPI
@@ -54,7 +54,8 @@ async def api_root(body: Update):
                     )
                 ],
                 button=InlineQueryResultsButton(
-                    text="create in pm bot", start_parameter=f"https://t.me/{BOT_NAME}?userquery={user_query}"
+                    text="create in pm bot",
+                    start_parameter=f"https://t.me/{BOT_NAME}?userquery={base64.b64encode(user_query.encode()).decode()}"
                 )
             )
         )
