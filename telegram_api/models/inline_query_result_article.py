@@ -8,3 +8,4 @@ class InlineQueryResultArticle(BaseModel):
     id: str
     title: str
     input_message_content: InputMessageContent
+    description: str | None = None

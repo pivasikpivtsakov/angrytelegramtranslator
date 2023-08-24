@@ -1,15 +1,14 @@
 import logging
 from contextlib import asynccontextmanager
 from uuid import uuid4
-import base64
 
 import openai
 from fastapi import FastAPI
 
 from angry_api import angrify
-from env_config import TG_API_TOKEN, OPENAI_API_KEY, BOT_NAME
+from env_config import TG_API_TOKEN, OPENAI_API_KEY
 from telegram_api.methods import set_webhook, answer_inline_query, AnswerInlineQueryBody
-from telegram_api.models import Update, InlineQueryResultArticle, InputTextMessageContent, InlineQueryResultsButton
+from telegram_api.models import Update, InlineQueryResultArticle, InputTextMessageContent
 
 app = FastAPI()
 logging.basicConfig(level=logging.DEBUG)
@@ -50,13 +49,10 @@ async def api_root(body: Update):
                     InlineQueryResultArticle(
                         id=str(uuid4()),
                         title="calm text",
+                        description=calm_text,
                         input_message_content=InputTextMessageContent(message_text=calm_text)
                     )
                 ],
-                # button=InlineQueryResultsButton(
-                #     text="create in pm bot",
-                #     start_parameter=f"https://t.me/{BOT_NAME}?userquery={base64.b64encode(user_query.encode()).decode()}"
-                # )
             )
         )
 
