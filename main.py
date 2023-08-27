@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from typing import Callable, Coroutine
 from uuid import uuid4
 
 import openai
@@ -7,6 +8,7 @@ from fastapi import FastAPI
 
 from angry_api import angrify
 from env_config import TG_API_TOKEN, OPENAI_API_KEY
+from services import debounce
 from telegram_api.methods import set_webhook, answer_inline_query, AnswerInlineQueryBody
 from telegram_api.models import Update, InlineQueryResultArticle, InputTextMessageContent
 
@@ -34,13 +36,32 @@ async def root():
     return "healthy"
 
 
+users_to_angrifiers: dict[int, Callable[..., Coroutine[..., ..., Coroutine[..., ..., str]]]] = {}
+
+
+async def get_angrifier_for_user(user_id: int):
+    debounce_1000 = debounce(1)
+
+    async def angrify_for_user(text: str):
+        logger.info(f"angrifier for user={user_id} called!")
+        return await angrify(text)
+
+    if not (angrifier := users_to_angrifiers.get(user_id)):
+        users_to_angrifiers[user_id] = debounce_1000(angrify_for_user)
+        angrifier = users_to_angrifiers[user_id]
+
+    return angrifier
+
+
 @app.post(f"/{TG_API_TOKEN}")
 async def api_root(body: Update):
     logger.info(body.json())
 
-    user_query = body.inline_query.query.strip("\n ")
+    user_query = body.inline_query.query.strip("\r\n ")
+    angrify_for_user = await get_angrifier_for_user(body.inline_query.from_.id)
     if user_query:
-        calm_text = await angrify(user_query)
+        angrify_for_user_deb = await angrify_for_user(user_query)
+        calm_text = await angrify_for_user_deb
 
         await answer_inline_query(
             AnswerInlineQueryBody(
