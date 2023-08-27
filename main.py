@@ -41,6 +41,8 @@ users_to_angrifiers: dict[int, Callable[..., Coroutine[..., ..., Coroutine[..., 
 
 async def get_angrifier_for_user(user_id: int):
     debouncer = debounce(float(DEBOUNCE_SECS))
+    logger.debug("users to angrifiers content:")
+    logger.debug(users_to_angrifiers)
 
     async def angrify_for_user(text: str):
         logger.info(f"angrifier for user={user_id} called!")
