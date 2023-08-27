@@ -7,7 +7,7 @@ import openai
 from fastapi import FastAPI
 
 from angry_api import angrify
-from env_config import TG_API_TOKEN, OPENAI_API_KEY
+from env_config import TG_API_TOKEN, OPENAI_API_KEY, DEBOUNCE_SECS
 from services import debounce
 from telegram_api.methods import set_webhook, answer_inline_query, AnswerInlineQueryBody
 from telegram_api.models import Update, InlineQueryResultArticle, InputTextMessageContent
@@ -40,14 +40,14 @@ users_to_angrifiers: dict[int, Callable[..., Coroutine[..., ..., Coroutine[..., 
 
 
 async def get_angrifier_for_user(user_id: int):
-    debounce_1000 = debounce(1)
+    debouncer = debounce(float(DEBOUNCE_SECS))
 
     async def angrify_for_user(text: str):
         logger.info(f"angrifier for user={user_id} called!")
         return await angrify(text)
 
     if not (angrifier := users_to_angrifiers.get(user_id)):
-        users_to_angrifiers[user_id] = debounce_1000(angrify_for_user)
+        users_to_angrifiers[user_id] = debouncer(angrify_for_user)
         angrifier = users_to_angrifiers[user_id]
 
     return angrifier
