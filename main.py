@@ -3,8 +3,9 @@ from contextlib import asynccontextmanager
 from uuid import uuid4
 
 import openai
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request, Depends, HTTPException
 from throttled.fastapi import FastAPILimiter
+from throttled.fastapi.base import HTTPLimitExceeded
 from throttled.models import Rate
 from throttled.storage.memory import MemoryStorage
 
@@ -42,8 +43,14 @@ async def get_user_id_from_body(body: Update) -> str:
 
 
 class UserIdLimiter(FastAPILimiter):
+    def _override_limit_exceeded_error(self):
+        raise HTTPException(status_code=200)
+
     def __call__(self, request: Request, user_id: str = Depends(get_user_id_from_body)):
-        self.limit(key=f"{user_id}")
+        try:
+            self.limit(key=f"{user_id}")
+        except HTTPLimitExceeded:
+            return self._override_limit_exceeded_error()
 
 
 tg_webhook_limiter = UserIdLimiter(limit=Rate(1, 2), storage=MemoryStorage(cache={}))
