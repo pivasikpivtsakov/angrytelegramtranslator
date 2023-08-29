@@ -1,16 +1,14 @@
 import logging
 from contextlib import asynccontextmanager
+from typing import Callable, Coroutine
 from uuid import uuid4
 
 import openai
-from fastapi import FastAPI, Request, Depends, HTTPException
-from throttled.fastapi import FastAPILimiter
-from throttled.fastapi.base import HTTPLimitExceeded
-from throttled.models import Rate
-from throttled.storage.memory import MemoryStorage
+from fastapi import FastAPI
 
 from angry_api import angrify
-from env_config import TG_API_TOKEN, OPENAI_API_KEY
+from env_config import TG_API_TOKEN, OPENAI_API_KEY, DEBOUNCE_SECS
+from services import debounce
 from telegram_api.methods import set_webhook, answer_inline_query, AnswerInlineQueryBody
 from telegram_api.models import Update, InlineQueryResultArticle, InputTextMessageContent
 
@@ -38,31 +36,32 @@ async def root():
     return "healthy"
 
 
-async def get_user_id_from_body(body: Update) -> str:
-    return str(body.inline_query.from_.id)
+users_to_angrifiers: dict[int, Callable[..., Coroutine[..., ..., Coroutine[..., ..., str]]]] = {}
 
 
-class UserIdLimiter(FastAPILimiter):
-    def _override_limit_exceeded_error(self):
-        raise HTTPException(status_code=200)
+async def get_angrifier_for_user(user_id: int):
+    debouncer = debounce(float(DEBOUNCE_SECS))
 
-    def __call__(self, request: Request, user_id: str = Depends(get_user_id_from_body)):
-        try:
-            self.limit(key=f"{user_id}")
-        except HTTPLimitExceeded:
-            return self._override_limit_exceeded_error()
+    async def angrify_for_user(text: str):
+        logger.info(f"angrifier for user={user_id} called!")
+        return await angrify(text)
 
+    if not (angrifier := users_to_angrifiers.get(user_id)):
+        users_to_angrifiers[user_id] = debouncer(angrify_for_user)
+        angrifier = users_to_angrifiers[user_id]
 
-tg_webhook_limiter = UserIdLimiter(limit=Rate(1, 2), storage=MemoryStorage(cache={}))
+    return angrifier
 
 
 @app.post(f"/{TG_API_TOKEN}")
-async def api_root(body: Update, limiter: UserIdLimiter = Depends(tg_webhook_limiter)):
+async def api_root(body: Update):
     logger.info(body.json())
 
     user_query = body.inline_query.query.strip("\r\n ")
+    angrify_for_user = await get_angrifier_for_user(body.inline_query.from_.id)
     if user_query:
-        calm_text = await angrify(user_query)
+        angrify_for_user_deb = await angrify_for_user(user_query)
+        calm_text = await angrify_for_user_deb
 
         await answer_inline_query(
             AnswerInlineQueryBody(
