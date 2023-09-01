@@ -6,6 +6,6 @@ from .user import User
 class InlineQuery(BaseModel):
     id: str
     from_: User = Field(alias="from")
-    chat_type: str
+    chat_type: str | None
     query: str
     offset: str
