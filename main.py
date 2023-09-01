@@ -78,7 +78,10 @@ async def root():
 
 
 @router.post(f"/{TG_API_TOKEN}")
-async def api_root(body: Update):
+async def api_root(request: Request):
+    body = await request.body()
+    logger.debug(body)
+    return None
     # logger.info(f"received update from tg: {body.json()}")
     payload = InlineDeangrifyPayload(
         user_id=body.inline_query.from_.id,
