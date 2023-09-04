@@ -1,1 +1,1 @@
-from .angrify import angrify
+from .deangrify import deangrify

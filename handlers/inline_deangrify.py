@@ -7,7 +7,7 @@ from fastapi_events.handlers.local import local_handler
 from fastapi_events.registry.payload_schema import registry as payload_schema
 from pydantic import BaseModel
 
-from angry_api import angrify
+from angry_api import deangrify
 from env_config import DEBOUNCE_SECS
 from services import debounce
 from telegram_api.methods import answer_inline_query, AnswerInlineQueryBody
@@ -30,15 +30,15 @@ class InlineDeangrifyPayload(BaseModel):
 users_to_angrifiers: dict[int, Callable[..., Coroutine[..., ..., Coroutine[..., ..., str]]]] = {}
 
 
-async def get_angrifier_for_user(user_id: int):
+async def get_deangrifier_for_user(user_id: int):
     debouncer = debounce(float(DEBOUNCE_SECS))
 
-    async def angrify_for_user(text: str):
+    async def deangrify_for_user(text: str):
         logger.info(f"angrifier for user={user_id} called!")
-        return await angrify(text)
+        return await deangrify(text)
 
     if not (angrifier := users_to_angrifiers.get(user_id)):
-        users_to_angrifiers[user_id] = debouncer(angrify_for_user)
+        users_to_angrifiers[user_id] = debouncer(deangrify_for_user)
         angrifier = users_to_angrifiers[user_id]
 
     return angrifier
@@ -49,10 +49,11 @@ async def deangrify_inline(event: Event):
     event_name, payload = event
     payload_model = InlineDeangrifyPayload(**payload)
     user_query = payload_model.query
-    angrify_for_user = await get_angrifier_for_user(payload_model.user_id)
+    deangrify_for_user = await get_deangrifier_for_user(payload_model.user_id)
     if user_query:
-        angrify_for_user_deb = await angrify_for_user(user_query)
+        angrify_for_user_deb = await deangrify_for_user(user_query)
         calm_text = await angrify_for_user_deb
+        logger.debug(f"calm text output is: {calm_text}")
 
         await answer_inline_query(
             AnswerInlineQueryBody(
