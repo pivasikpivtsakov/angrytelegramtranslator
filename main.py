@@ -1,4 +1,5 @@
 import logging
+import sys
 from contextlib import asynccontextmanager
 
 import openai
@@ -22,6 +23,8 @@ app.add_middleware(
 )
 router = APIRouter()
 logging.basicConfig(level=logging.DEBUG)
+# reconfigure actually exists on sys.stderr object
+sys.stderr.reconfigure(encoding="utf-8")
 httpx_logger = logging.getLogger("httpx")
 httpx_logger.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
