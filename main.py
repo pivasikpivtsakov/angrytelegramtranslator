@@ -13,6 +13,7 @@ from fastapi_events.middleware import EventHandlerASGIMiddleware
 
 from env_config import TG_API_TOKEN, OPENAI_API_KEY, ENVIRONMENT
 from handlers import EventNames, InlineDeangrifyPayload
+from services import AppEnvironments
 from telegram_api.methods import set_webhook
 from telegram_api.models import Update
 
@@ -31,7 +32,7 @@ async def lifespan(_app: FastAPI):
     yield
 
 app_kwargs = {}
-if ENVIRONMENT == "PRODUCTION":
+if ENVIRONMENT == AppEnvironments.PRODUCTION:
     app_kwargs["openapi_url"] = None
 app = FastAPI(lifespan=lifespan, **app_kwargs)
 app.add_middleware(
