@@ -11,23 +11,10 @@ from fastapi_events.dispatcher import dispatch
 from fastapi_events.handlers.local import local_handler
 from fastapi_events.middleware import EventHandlerASGIMiddleware
 
-from env_config import TG_API_TOKEN, OPENAI_API_KEY
+from env_config import TG_API_TOKEN, OPENAI_API_KEY, ENVIRONMENT
 from handlers import EventNames, InlineDeangrifyPayload
 from telegram_api.methods import set_webhook
 from telegram_api.models import Update
-
-app = FastAPI()
-app.add_middleware(
-    EventHandlerASGIMiddleware,
-    handlers=[local_handler],
-)
-router = APIRouter()
-logging.basicConfig(level=logging.DEBUG)
-# reconfigure actually exists on sys.stderr object
-sys.stderr.reconfigure(encoding="utf-8")
-httpx_logger = logging.getLogger("httpx")
-httpx_logger.setLevel(logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -42,6 +29,22 @@ async def lifespan(_app: FastAPI):
     else:
         logger.error("openai api key unset!")
     yield
+
+app_kwargs = {}
+if ENVIRONMENT == "PRODUCTION":
+    app_kwargs["openapi_url"] = None
+app = FastAPI(lifespan=lifespan, **app_kwargs)
+app.add_middleware(
+    EventHandlerASGIMiddleware,
+    handlers=[local_handler],
+)
+router = APIRouter()
+logging.basicConfig(level=logging.INFO)
+# reconfigure actually exists on sys.stderr object
+sys.stderr.reconfigure(encoding="utf-8")
+httpx_logger = logging.getLogger("httpx")
+httpx_logger.setLevel(logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 @app.exception_handler(RequestValidationError)
