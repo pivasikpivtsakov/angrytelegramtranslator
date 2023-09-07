@@ -20,9 +20,10 @@ from telegram_api.models import Update
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    logger.debug("setting webhook...")
-    webhook_result = await set_webhook()
-    logger.info(f"setwebhook result: \n {webhook_result}")
+    if ENVIRONMENT == AppEnvironments.PRODUCTION:
+        logger.debug("setting webhook...")
+        webhook_result = await set_webhook()
+        logger.info(f"setwebhook result: \n {webhook_result}")
     logger.debug("setting openai api key...")
     if OPENAI_API_KEY:
         openai.api_key = OPENAI_API_KEY
@@ -34,7 +35,10 @@ async def lifespan(_app: FastAPI):
 app_kwargs = {}
 if ENVIRONMENT == AppEnvironments.PRODUCTION:
     app_kwargs["openapi_url"] = None
-app = FastAPI(lifespan=lifespan, **app_kwargs)
+app = FastAPI(
+    # lifespan=lifespan,
+    **app_kwargs
+)
 app.add_middleware(
     EventHandlerASGIMiddleware,
     handlers=[local_handler],
