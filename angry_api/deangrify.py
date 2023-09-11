@@ -2,7 +2,7 @@ import logging
 
 import openai
 
-from .gptmodels import GptModels
+import env_config
 from .samples import samples
 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 async def deangrify(text: str) -> str:
     logger.info(f"deangrifying this text: {text}")
     name = "OfficialGPT"
-    model = GptModels.THREETURBO
+    model = env_config.OPENAI_MODEL
     completion = await openai.ChatCompletion.acreate(
         model=model,
         messages=[

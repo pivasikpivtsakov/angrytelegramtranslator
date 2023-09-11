@@ -11,29 +11,29 @@ from fastapi_events.dispatcher import dispatch
 from fastapi_events.handlers.local import local_handler
 from fastapi_events.middleware import EventHandlerASGIMiddleware
 
-from env_config import TG_API_TOKEN, OPENAI_API_KEY, ENVIRONMENT
-from handlers import EventNames, InlineDeangrifyPayload
 from services import AppEnvironments
+import env_config
+from handlers import EventNames, InlineDeangrifyPayload
 from telegram_api.methods import set_webhook
 from telegram_api.models import Update
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    if ENVIRONMENT == AppEnvironments.PRODUCTION:
+    if env_config.ENVIRONMENT == AppEnvironments.PRODUCTION:
         logger.debug("setting webhook...")
         webhook_result = await set_webhook()
         logger.info(f"setwebhook result: \n {webhook_result}")
     logger.debug("setting openai api key...")
-    if OPENAI_API_KEY:
-        openai.api_key = OPENAI_API_KEY
+    if env_config.OPENAI_API_KEY:
+        openai.api_key = env_config.OPENAI_API_KEY
         logger.info("openai api key is set")
     else:
         logger.error("openai api key unset!")
     yield
 
 app_kwargs = {}
-if ENVIRONMENT == AppEnvironments.PRODUCTION:
+if env_config.ENVIRONMENT == AppEnvironments.PRODUCTION:
     app_kwargs["openapi_url"] = None
 app = FastAPI(
     # lifespan=lifespan,
@@ -67,7 +67,7 @@ async def root():
     return "healthy"
 
 
-@router.post(f"/{TG_API_TOKEN}")
+@router.post(f"/{env_config.TG_API_TOKEN}")
 async def api_root(body: Update):
     if body.inline_query is not None:
         payload = InlineDeangrifyPayload(
