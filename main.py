@@ -36,7 +36,7 @@ app_kwargs = {}
 if env_config.ENVIRONMENT == AppEnvironments.PRODUCTION:
     app_kwargs["openapi_url"] = None
 app = FastAPI(
-    # lifespan=lifespan,
+    lifespan=lifespan,
     **app_kwargs
 )
 app.add_middleware(
@@ -72,7 +72,7 @@ async def api_root(body: Update):
     if body.inline_query is not None:
         payload = InlineDeangrifyPayload(
             user_id=body.inline_query.from_.id,
-            query=body.inline_query.query.strip("\r\n "),
+            query=body.inline_query.query,
             query_id=body.inline_query.id,
         )
         dispatch(
