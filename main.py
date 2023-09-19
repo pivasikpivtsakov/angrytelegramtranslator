@@ -13,7 +13,7 @@ from fastapi_events.middleware import EventHandlerASGIMiddleware
 
 from services import AppEnvironments
 import env_config
-from handlers import EventNames, InlineDeangrifyPayload
+from handlers import EventNames, InlineDeangrifyPayload, BasePayload, PrivateMessagePayload
 from telegram_api.methods import set_webhook
 from telegram_api.models import Update
 
@@ -44,11 +44,11 @@ app.add_middleware(
     handlers=[local_handler],
 )
 router = APIRouter()
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 # reconfigure actually exists on sys.stderr object
 sys.stderr.reconfigure(encoding="utf-8")
 httpx_logger = logging.getLogger("httpx")
-httpx_logger.setLevel(logging.DEBUG)
+httpx_logger.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -67,18 +67,41 @@ async def root():
     return "healthy"
 
 
+def _handle_update(event_name: EventNames, payload: BasePayload):
+    dispatch(
+        event_name,
+        payload.dict()
+    )
+
+
+def handle_inline_deangrify(body: Update):
+    logger.info("received inline query")
+    payload = InlineDeangrifyPayload(
+        user_id=body.inline_query.from_.id,
+        query=body.inline_query.query,
+        query_id=body.inline_query.id,
+    )
+    event_name = EventNames.INLINE_DEANGRIFY
+    _handle_update(event_name, payload)
+
+
+def handle_private_message(body: Update):
+    logger.info("received private message")
+    payload = PrivateMessagePayload(
+        user_id_from=body.message.from_.id,
+        text=body.message.text,
+    )
+    event_name = EventNames.PRIVATE_MESSAGE
+    _handle_update(event_name, payload)
+
+
 @router.post(f"/{env_config.TG_API_TOKEN}")
 async def api_root(body: Update):
+    logger.debug(f"deserialized update: {body}")
     if body.inline_query is not None:
-        payload = InlineDeangrifyPayload(
-            user_id=body.inline_query.from_.id,
-            query=body.inline_query.query,
-            query_id=body.inline_query.id,
-        )
-        dispatch(
-            EventNames.INLINE_DEANGRIFY,
-            payload.dict()
-        )
+        handle_inline_deangrify(body)
+    elif body.message is not None:
+        handle_private_message(body)
     return None
 
 

@@ -5,7 +5,6 @@ from uuid import uuid4
 from fastapi_events.typing import Event
 from fastapi_events.handlers.local import local_handler
 from fastapi_events.registry.payload_schema import registry as payload_schema
-from pydantic import BaseModel
 from openai import error as openai_error
 
 from angry_api import deangrify
@@ -13,13 +12,14 @@ from env_config import DEBOUNCE_SECS, BOT_NAME
 from services import debounce
 from telegram_api.methods import answer_inline_query, AnswerInlineQueryBody
 from telegram_api.models import InlineQueryResultArticle, InputTextMessageContent
+from . import BasePayload
 from .event_names import EventNames
 
 logger = logging.getLogger(__name__)
 
 
 @payload_schema.register(event_name=EventNames.INLINE_DEANGRIFY)
-class InlineDeangrifyPayload(BaseModel):
+class InlineDeangrifyPayload(BasePayload):
     class Config:
         arbitrary_types_allowed = True
 
