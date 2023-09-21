@@ -40,3 +40,5 @@ _openai_models_set = enum_to_set_str(angry_api.GptModels)
 OPENAI_MODEL = _env_get(
     "OPENAI_MODEL", lambda x: x in _openai_models_set, f"OPENAI_MODEL must be one of: {_openai_models_set}"
 )
+
+DATABASE_URL = _env_get("DATABASE_URL")

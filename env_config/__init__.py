@@ -6,4 +6,5 @@ from .prepare import (
     DEBOUNCE_SECS,
     ENVIRONMENT,
     OPENAI_MODEL,
+    DATABASE_URL,
 )

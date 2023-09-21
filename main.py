@@ -11,9 +11,9 @@ from fastapi_events.dispatcher import dispatch
 from fastapi_events.handlers.local import local_handler
 from fastapi_events.middleware import EventHandlerASGIMiddleware
 
-from services import AppEnvironments
 import env_config
 from handlers import EventNames, InlineDeangrifyPayload, BasePayload, PrivateMessagePayload
+from services import AppEnvironments
 from telegram_api.methods import set_webhook
 from telegram_api.models import Update
 
