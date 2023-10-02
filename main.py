@@ -13,6 +13,7 @@ from fastapi_events.handlers.local import local_handler
 from fastapi_events.middleware import EventHandlerASGIMiddleware
 
 import env_config
+from angry_api import deangrify
 from handlers import EventNames, InlineDeangrifyPayload, BasePayload, PrivateMessagePayload
 from services import AppEnvironments
 from telegram_api.methods import set_webhook
@@ -98,6 +99,15 @@ def handle_private_message(body: Update):
     _handle_update(event_name, payload)
 
 
+def handle_vk_message(body: Notification):
+    logger.info("received vk private message")
+    # this breaks layered structure of the app
+    # + it runs in the request-response cycle
+    # must be offloaded into event
+    deangrified_text = await deangrify(body.object.message.text)
+    await messages_send(body.object.message.peer_id, deangrified_text)
+
+
 @router.post(f"/{env_config.TG_API_TOKEN}")
 async def tg_api_root(body: Update):
     logger.debug(f"deserialized tg update: {body}")
@@ -109,13 +119,12 @@ async def tg_api_root(body: Update):
 
 
 @router.post(f"/{env_config.VK_API_SECRET}")
-async def vk_api_root(update: Notification, response_class: PlainTextResponse):
-    logger.debug(f"deserialized vk update: {update}")
-    if update.type == NotificationType.CONFIRMATION:
+async def vk_api_root(body: Notification, response_class: PlainTextResponse):
+    logger.debug(f"deserialized vk update: {body}")
+    if body.type == NotificationType.CONFIRMATION:
         return PlainTextResponse(content=env_config.VK_API_CONFIRMATION_RESPONSE)
-    elif update.type == NotificationType.MESSAGE_NEW:
-        logger.info("received vk private message")
-        await messages_send(update.object.message.peer_id, "hi")
+    elif body.type == NotificationType.MESSAGE_NEW:
+        handle_vk_message(body)
     return PlainTextResponse(content="ok")
 
 
