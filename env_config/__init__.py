@@ -7,4 +7,6 @@ from .prepare import (
     ENVIRONMENT,
     OPENAI_MODEL,
     DATABASE_URL,
+    VK_API_SECRET,
+    VK_API_CONFIRMATION_RESPONSE,
 )

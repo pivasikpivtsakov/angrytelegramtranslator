@@ -16,6 +16,7 @@ from handlers import EventNames, InlineDeangrifyPayload, BasePayload, PrivateMes
 from services import AppEnvironments
 from telegram_api.methods import set_webhook
 from telegram_api.models import Update
+from vk_api.models import Confirmation
 
 
 @asynccontextmanager
@@ -96,13 +97,23 @@ def handle_private_message(body: Update):
 
 
 @router.post(f"/{env_config.TG_API_TOKEN}")
-async def api_root(body: Update):
-    logger.debug(f"deserialized update: {body}")
+async def tg_api_root(body: Update):
+    logger.debug(f"deserialized tg update: {body}")
     if body.inline_query is not None:
         handle_inline_deangrify(body)
     elif body.message is not None:
         handle_private_message(body)
     return None
+
+
+@router.post(f"/{env_config.VK_API_SECRET}")
+async def vk_api_root(update: Confirmation):
+    logger.debug(f"deserialized vk update: {update}")
+    if update.type == "confirmation":
+        return env_config.VK_API_CONFIRMATION_RESPONSE
+    elif update.type == "message_new":
+        logger.info("received vk private message")
+    return "ok"
 
 
 app.include_router(router)
