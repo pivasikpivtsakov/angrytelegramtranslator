@@ -1,1 +1,1 @@
-from .confirmation import Confirmation
+from .notification import Notification, NotificationType
