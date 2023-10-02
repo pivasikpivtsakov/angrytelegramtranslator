@@ -124,7 +124,7 @@ async def vk_api_root(body: Notification, response_class: PlainTextResponse):
     if body.type == NotificationType.CONFIRMATION:
         return PlainTextResponse(content=env_config.VK_API_CONFIRMATION_RESPONSE)
     elif body.type == NotificationType.MESSAGE_NEW:
-        handle_vk_message(body)
+        await handle_vk_message(body)
     return PlainTextResponse(content="ok")
 
 
