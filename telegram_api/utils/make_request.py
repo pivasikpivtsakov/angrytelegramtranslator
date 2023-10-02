@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Tuple, overload
+from typing import Any, Tuple
 
 import httpx
 from httpx import HTTPError
