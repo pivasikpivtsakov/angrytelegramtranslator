@@ -99,7 +99,7 @@ def handle_private_message(body: Update):
     _handle_update(event_name, payload)
 
 
-def handle_vk_message(body: Notification):
+async def handle_vk_message(body: Notification):
     logger.info("received vk private message")
     # this breaks layered structure of the app
     # + it runs in the request-response cycle
