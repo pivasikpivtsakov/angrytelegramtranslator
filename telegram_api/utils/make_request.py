@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 
 async def make_tg_request(
         method: Method, formdata: FormDataModel | None = None, inputfile: InputFile | None = None
-) -> Any | Tuple[Any, Any]:
+) -> Any:
     methodval = method.value
     data = formdata.as_form_data_dict()
-    logger.info(f"making request to method={methodval}")
+    logger.info(f"making request to tg method={methodval}")
     logger.debug(f"with data={data}")
     try:
         async with httpx.AsyncClient() as client:

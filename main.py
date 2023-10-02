@@ -17,6 +17,7 @@ from handlers import EventNames, InlineDeangrifyPayload, BasePayload, PrivateMes
 from services import AppEnvironments
 from telegram_api.methods import set_webhook
 from telegram_api.models import Update
+from vk_api.methods import messages_send
 from vk_api.models import Notification, NotificationType
 
 
@@ -114,6 +115,7 @@ async def vk_api_root(update: Notification, response_class: PlainTextResponse):
         return PlainTextResponse(content=env_config.VK_API_CONFIRMATION_RESPONSE)
     elif update.type == NotificationType.MESSAGE_NEW:
         logger.info("received vk private message")
+        await messages_send(update.object.message.peer_id, "hi")
     return PlainTextResponse(content="ok")
 
 

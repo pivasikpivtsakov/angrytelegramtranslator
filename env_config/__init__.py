@@ -9,4 +9,6 @@ from .prepare import (
     DATABASE_URL,
     VK_API_SECRET,
     VK_API_CONFIRMATION_RESPONSE,
+    VK_API_VERSION,
+    VK_ACCESS_TOKEN,
 )
