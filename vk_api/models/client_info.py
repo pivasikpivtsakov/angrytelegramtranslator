@@ -2,8 +2,8 @@ from pydantic import BaseModel
 
 
 class ClientInfo(BaseModel):
-    client: str
-    version: str
-    platform: str
-    lang: str
-    button_action: dict[str, str | int | bool | list[dict]]
+    button_actions: list[str]
+    keyboard: bool
+    inline_keyboard: bool
+    carousel: bool
+    lang_id: str
