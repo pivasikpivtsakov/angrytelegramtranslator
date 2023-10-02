@@ -6,10 +6,12 @@ import openai
 from fastapi import FastAPI, Request
 from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
+from fastapi.openapi.models import Response
 from fastapi.routing import APIRouter
 from fastapi_events.dispatcher import dispatch
 from fastapi_events.handlers.local import local_handler
 from fastapi_events.middleware import EventHandlerASGIMiddleware
+from fastapi.responses import PlainTextResponse
 
 import env_config
 from handlers import EventNames, InlineDeangrifyPayload, BasePayload, PrivateMessagePayload
@@ -107,13 +109,13 @@ async def tg_api_root(body: Update):
 
 
 @router.post(f"/{env_config.VK_API_SECRET}")
-async def vk_api_root(update: Confirmation):
+async def vk_api_root(update: Confirmation, response_class: PlainTextResponse):
     logger.debug(f"deserialized vk update: {update}")
     if update.type == "confirmation":
-        return env_config.VK_API_CONFIRMATION_RESPONSE
+        return PlainTextResponse(content=env_config.VK_API_CONFIRMATION_RESPONSE)
     elif update.type == "message_new":
         logger.info("received vk private message")
-    return "ok"
+    return PlainTextResponse(content="ok")
 
 
 app.include_router(router)
