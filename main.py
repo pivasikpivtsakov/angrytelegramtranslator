@@ -14,7 +14,7 @@ from fastapi_events.middleware import EventHandlerASGIMiddleware
 
 import env_config
 from angry_api import deangrify
-from handlers import EventNames, InlineDeangrifyPayload, BasePayload, PrivateMessagePayload
+from handlers import EventNames, InlineDeangrifyPayload, BasePayload, TgPrivateMessagePayload, VkPrivateMessagePayload, VkEventNames
 from services import AppEnvironments
 from telegram_api.methods import set_webhook
 from telegram_api.models import Update
@@ -91,7 +91,7 @@ def handle_inline_deangrify(body: Update):
 
 def handle_private_message(body: Update):
     logger.info("received private message")
-    payload = PrivateMessagePayload(
+    payload = TgPrivateMessagePayload(
         user_id_from=body.message.from_.id,
         text=body.message.text,
     )
@@ -101,11 +101,12 @@ def handle_private_message(body: Update):
 
 async def handle_vk_message(body: Notification):
     logger.info("received vk private message")
-    # this breaks layered structure of the app
-    # + it runs in the request-response cycle
-    # must be offloaded into event
-    deangrified_text = await deangrify(body.object.message.text)
-    await messages_send(body.object.message.peer_id, deangrified_text)
+    payload = VkPrivateMessagePayload(
+        user_id_from=body.object.message.peer_id,
+        text=body.object.message.text
+    )
+    event_name = VkEventNames.PRIVATE_MESSAGE
+    _handle_update(event_name, payload)
 
 
 @router.post(f"/{env_config.TG_API_TOKEN}")
