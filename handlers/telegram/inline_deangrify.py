@@ -12,8 +12,8 @@ from env_config import DEBOUNCE_SECS, BOT_NAME
 from services import debounce
 from telegram_api.methods import answer_inline_query, AnswerInlineQueryBody
 from telegram_api.models import InlineQueryResultArticle, InputTextMessageContent
-from . import BasePayload
-from .event_names import EventNames
+from handlers.base_payload import BasePayload
+from handlers.telegram.event_names import EventNames
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ def preprocess_query(query: str) -> str:
 @local_handler.register(event_name=EventNames.INLINE_DEANGRIFY)
 async def deangrify_inline(event: Event):
     event_name, payload = event
-    payload_model = InlineDeangrifyPayload(**payload)
+    payload_model = TgInlineDeangrifyPayload(**payload)
 
     user_query = preprocess_query(payload_model.query)
     deangrify_for_user = get_deangrifier_for_user(payload_model.user_id)

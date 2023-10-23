@@ -3,7 +3,8 @@ from fastapi_events.handlers.local import local_handler
 from fastapi_events.registry.payload_schema import registry as payload_schema
 
 from env_config import BOT_NAME
-from handlers import EventNames, BasePayload
+from handlers.base_payload import BasePayload
+from .event_names import EventNames
 from telegram_api.methods import send_photo, SendPhotoBody
 
 
