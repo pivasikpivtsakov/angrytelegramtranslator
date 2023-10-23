@@ -52,7 +52,7 @@ def preprocess_query(query: str) -> str:
 @local_handler.register(event_name=EventNames.INLINE_DEANGRIFY)
 async def deangrify_inline(event: Event):
     event_name, payload = event
-    payload_model = TgInlineDeangrifyPayload(**payload)
+    payload_model = InlineDeangrifyPayload(**payload)
 
     user_query = preprocess_query(payload_model.query)
     deangrify_for_user = get_deangrifier_for_user(payload_model.user_id)
