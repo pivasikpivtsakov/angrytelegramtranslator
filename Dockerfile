@@ -14,4 +14,8 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 COPY . .
 
 # actual run command
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD [
+        "uvicorn", "main:app",
+        "--app-dir", "src/",
+        "--host", "0.0.0.0", "--port", "8000"
+]
