@@ -1,7 +1,7 @@
 import asyncio
 
-from telegram_api.methods import send_photo, SendPhotoBody
-from telegram_api.models import InputFile
+from src.telegram_api.methods import send_photo, SendPhotoBody
+from src.telegram_api.models import InputFile
 
 
 async def main():
