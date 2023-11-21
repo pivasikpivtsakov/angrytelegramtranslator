@@ -6,12 +6,12 @@ from env_config import BOT_NAME
 from handlers.base_payload import BasePayload
 from .event_names import EventNames
 from telegram_api.methods import send_photo, SendPhotoBody
+from pydantic import ConfigDict
 
 
 @payload_schema.register(event_name=EventNames.PRIVATE_MESSAGE)
 class PrivateMessagePayload(BasePayload):
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     user_id_from: int
     text: str

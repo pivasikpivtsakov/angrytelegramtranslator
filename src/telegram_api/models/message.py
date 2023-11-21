@@ -6,9 +6,9 @@ from .user import User
 
 class Message(BaseModel):
     message_id: int
-    message_thread_id: int | None
-    from_: User | None = Field(alias="from")
-    sender_chat: Chat | None
+    message_thread_id: int | None = None
+    from_: User | None = Field(None, alias="from")
+    sender_chat: Chat | None = None
     date: int
     chat: Chat
-    text: str | None
+    text: str | None = None

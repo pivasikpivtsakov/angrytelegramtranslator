@@ -6,12 +6,12 @@ from angry_api import deangrify
 from vk_api.methods import messages_send
 from .event_names import EventNames
 from handlers.base_payload import BasePayload
+from pydantic import ConfigDict
 
 
 @payload_schema.register(event_name=EventNames.PRIVATE_MESSAGE)
 class PrivateMessagePayload(BasePayload):
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     user_id_from: int
     text: str

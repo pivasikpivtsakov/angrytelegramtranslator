@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class FormDataModel(BaseModel):
     def as_form_data_dict(self):
-        d = self.dict().items()
+        d = self.model_dump().items()
         return {
             key:
                 val if type(val) is str

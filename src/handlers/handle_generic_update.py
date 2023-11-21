@@ -11,5 +11,5 @@ if TYPE_CHECKING:
 def handle_update(event_name: Union["TgEventNames", "VkEventNames"], payload: "BasePayload"):
     dispatch(
         event_name,
-        payload.dict()
+        payload.model_dump()
     )

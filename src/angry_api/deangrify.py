@@ -1,8 +1,7 @@
 import logging
 
-import openai
-
 import env_config
+from .openai_client import get_openai_client
 from .samples import samples
 
 logger = logging.getLogger(__name__)
@@ -12,7 +11,8 @@ async def deangrify(text: str) -> str:
     logger.info(f"deangrifying this text: {text}")
     name = "OfficialGPT"
     model = env_config.OPENAI_MODEL
-    completion = await openai.ChatCompletion.acreate(
+    client = get_openai_client()
+    completion = await client.chat.completions.create(
         model=model,
         messages=[
             {
@@ -70,6 +70,6 @@ async def deangrify(text: str) -> str:
         max_tokens=200,
         temperature=0.7,
     )
-    msg = completion["choices"][0]["message"]["content"]
+    msg = completion.choices[0].message.content
     logger.info(f"received deangrified reply from openai: {msg}")
     return msg

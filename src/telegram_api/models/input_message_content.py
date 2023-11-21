@@ -1,5 +1,7 @@
-from pydantic import BaseModel
+from typing import Union
 
+from .input_contact_message_content import InputContactMessageContent
+from .input_text_message_content import InputTextMessageContent
+from .input_invoice_message_content import InputInvoiceMessageContent
 
-class InputMessageContent(BaseModel):
-    pass
+InputMessageContent = Union[InputTextMessageContent, InputInvoiceMessageContent, InputContactMessageContent]

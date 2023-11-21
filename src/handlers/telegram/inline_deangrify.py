@@ -5,7 +5,7 @@ from uuid import uuid4
 from fastapi_events.typing import Event
 from fastapi_events.handlers.local import local_handler
 from fastapi_events.registry.payload_schema import registry as payload_schema
-from openai import error as openai_error
+from openai import RateLimitError as OpenAIRateLimitError, OpenAIError
 
 from angry_api import deangrify
 from env_config import DEBOUNCE_SECS, BOT_NAME
@@ -14,14 +14,14 @@ from telegram_api.methods import answer_inline_query, AnswerInlineQueryBody
 from telegram_api.models import InlineQueryResultArticle, InputTextMessageContent
 from handlers.base_payload import BasePayload
 from handlers.telegram.event_names import EventNames
+from pydantic import ConfigDict
 
 logger = logging.getLogger(__name__)
 
 
 @payload_schema.register(event_name=EventNames.INLINE_DEANGRIFY)
 class InlineDeangrifyPayload(BasePayload):
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     user_id: int
     query: str
@@ -62,8 +62,7 @@ async def deangrify_inline(event: Event):
             calm_text = await debounce_for_user
             logger.debug(f"calm text output is: {calm_text}")
 
-            await answer_inline_query(
-                AnswerInlineQueryBody(
+            answer_body = AnswerInlineQueryBody(
                     inline_query_id=payload_model.query_id,
                     results=[
                         InlineQueryResultArticle(
@@ -74,8 +73,13 @@ async def deangrify_inline(event: Event):
                         )
                     ],
                 )
+
+            await answer_inline_query(
+                answer_body
             )
-        except openai_error.RateLimitError:
+
+        except OpenAIRateLimitError as e:
+            logger.exception(e)
             please_donate = (
                 "Oops, I’m really sorry about that. "
                 "My OpenAI account ran out of money and I need to top it up. "
@@ -96,7 +100,8 @@ async def deangrify_inline(event: Event):
                     ],
                 )
             )
-        except openai_error.OpenAIError:
+        except OpenAIError as e:
+            logger.exception(e)
             await answer_inline_query(
                 AnswerInlineQueryBody(
                     inline_query_id=payload_model.query_id,

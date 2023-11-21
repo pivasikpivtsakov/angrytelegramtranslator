@@ -8,6 +8,6 @@ class Message(BaseModel):
     from_id: int
     text: str
     random_id: int
-    ref: str | None
-    ref_source: str | None
+    ref: str | None = None
+    ref_source: str | None = None
     attachments: list[dict]

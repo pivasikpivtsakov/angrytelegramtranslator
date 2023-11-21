@@ -12,7 +12,7 @@ class NotificationType(StrEnum):
 
 class Notification(BaseModel):
     type: str
-    event_id: str | None
-    v: str | None
-    object: MessageNewObject | None
+    event_id: str | None = None
+    v: str | None = None
+    object: MessageNewObject | None = None
     group_id: int

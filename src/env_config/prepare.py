@@ -35,7 +35,7 @@ def _env_get(
     return varvalue
 
 
-HOSTNAME = _env_get("HOSTNAME")
+HOSTNAME = _env_get("HOSTNAME", raise_if_failed=False)
 
 TG_API_TOKEN = _env_get("TG_API_TOKEN")
 

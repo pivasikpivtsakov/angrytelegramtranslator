@@ -1,5 +1,5 @@
 from pydantic import BaseModel
 
 
-class InputTextMessageContent(BaseModel):
+class InputInvoiceMessageContent(BaseModel):
     message_text: str

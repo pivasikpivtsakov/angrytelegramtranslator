@@ -2,7 +2,6 @@ import logging
 import sys
 from contextlib import asynccontextmanager
 
-import openai
 from fastapi import FastAPI, Request, Depends
 from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
@@ -28,12 +27,6 @@ async def lifespan(_app: FastAPI):
         logger.debug("setting webhook...")
         webhook_result = await set_webhook()
         logger.info(f"setwebhook result: \n {webhook_result}")
-    logger.debug("setting openai api key...")
-    if env_config.OPENAI_API_KEY:
-        openai.api_key = env_config.OPENAI_API_KEY
-        logger.info("openai api key is set")
-    else:
-        logger.error("openai api key unset!")
     yield
 
 app_kwargs = {}
