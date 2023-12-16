@@ -2,4 +2,4 @@ from enum import StrEnum
 
 
 class EventNames(StrEnum):
-    PRIVATE_MESSAGE = "PRIVATE_MESSAGE"
+    PRIVATE_MESSAGE = "VK_PRIVATE_MESSAGE"

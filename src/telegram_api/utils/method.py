@@ -5,3 +5,4 @@ class Method(StrEnum):
     SETWEBHOOK = "setWebhook"
     ANSWERINLINEQUERY = "answerInlineQuery"
     SEND_PHOTO = "sendPhoto"
+    SEND_MESSAGE = "sendMessage"

@@ -71,7 +71,7 @@ async def tg_api_root(body: Update, db: AsyncIOMotorDatabase = Depends(get_db)):
     if body.inline_query is not None:
         tg_handle_inline_deangrify(body)
     elif body.message is not None:
-        tg_handle_private_message(body)
+        tg_handle_private_message(body, db)
     return None
 
 
